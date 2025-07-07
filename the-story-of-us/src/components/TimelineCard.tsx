@@ -32,6 +32,14 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
 }) => {
   const relativeDate = formatRelativeDate(memory.date);
   
+  // Debug log
+  console.log('TimelineCard rendering:', {
+    type: memory.type,
+    title: memory.title,
+    hasTags: !!memory.tags,
+    tags: memory.tags,
+  });
+  
   // Check if this is a birth announcement
   if (memory.tags?.includes('birth') || memory.title === 'Welcome to the world') {
     return (

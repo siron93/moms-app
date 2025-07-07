@@ -100,3 +100,18 @@ export const getBaby = query({
     return await ctx.db.get(args.babyId);
   },
 });
+
+// Create test baby
+export const createTestBaby = mutation({
+  handler: async (ctx) => {
+    return await ctx.db.insert("babies", {
+      userId: undefined,
+      anonymousId: "test-anonymous",
+      name: "Emma",
+      birthDate: Date.now() - (1000 * 60 * 60 * 24 * 90), // 90 days ago
+      gender: "female",
+      profilePictureUrl: undefined,
+      createdAt: Date.now(),
+    });
+  },
+});

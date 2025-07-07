@@ -53,18 +53,32 @@ export const createGrowthLog = mutation({
       createdAt: Date.now(),
     });
 
-    // Also create a memory for this growth update
-    await ctx.db.insert("memories", {
-      babyId: args.babyId,
-      userId,
-      anonymousId: !userId ? args.anonymousId : undefined,
-      type: "growth",
-      title: "Growth Update",
-      date: args.date,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-
     return logId;
+  },
+});
+
+// Test data creation function
+export const createTestGrowthLog = mutation({
+  args: {
+    babyId: v.id("babies"),
+  },
+  handler: async (ctx, args) => {
+    // Get the baby to find the anonymous ID
+    const baby = await ctx.db.get(args.babyId);
+    
+    return await ctx.db.insert("growthLogs", {
+      babyId: args.babyId,
+      userId: undefined,
+      anonymousId: baby?.anonymousId || "test-anonymous",
+      date: Date.now() - 1000 * 60 * 60 * 24 * 4, // 4 days ago
+      weight: 12.5,
+      weightUnit: "lb",
+      height: 24,
+      heightUnit: "in",
+      headCircumference: 16,
+      headUnit: "in",
+      notes: "Emma is growing beautifully! The doctor says she's right on track.",
+      createdAt: Date.now(),
+    });
   },
 });

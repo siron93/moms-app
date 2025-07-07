@@ -106,3 +106,37 @@ export const deleteMilestoneEntry = mutation({
     await ctx.db.delete(args.entryId);
   },
 });
+
+// Test data creation function
+export const createTestMilestoneEntry = mutation({
+  args: {
+    babyId: v.id("babies"),
+  },
+  handler: async (ctx, args) => {
+    // Get the baby to find the anonymous ID
+    const baby = await ctx.db.get(args.babyId);
+    
+    // Get the "First Word" milestone
+    const firstWordMilestone = await ctx.db
+      .query("milestones")
+      .filter(q => q.eq(q.field("name"), "First Word"))
+      .first();
+      
+    if (!firstWordMilestone) {
+      throw new Error("First Word milestone not found");
+    }
+
+    return await ctx.db.insert("milestoneEntries", {
+      babyId: args.babyId,
+      milestoneId: firstWordMilestone._id,
+      userId: undefined,
+      anonymousId: baby?.anonymousId || "test-anonymous",
+      achievedDate: Date.now() - 1000 * 60 * 60 * 24 * 1, // 1 day ago
+      notes: "Emma said 'Mama' for the first time while reaching for me! My heart melted!",
+      photoUrl: "https://images.pexels.com/photos/1648387/pexels-photo-1648387.jpeg?auto=compress&cs=tinysrgb&w=800",
+      photoLocalPath: undefined,
+      metadata: { word: "Mama" },
+      createdAt: Date.now(),
+    });
+  },
+});

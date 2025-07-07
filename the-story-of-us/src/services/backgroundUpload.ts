@@ -30,7 +30,7 @@ export const addUploadToQueue = async (upload: UploadQueueItem) => {
 export const processPendingUploads = async (
   generateUploadUrl: () => Promise<string>,
   storeFileUrl: (args: any) => Promise<any>,
-  updateMemoryMedia: (args: any) => Promise<void>,
+  updatePhotoMedia: (args: any) => Promise<void>,
   updateMilestoneMedia: (args: any) => Promise<void>
 ) => {
   try {
@@ -54,14 +54,13 @@ export const processPendingUploads = async (
         if (cloudUrl) {
           // Update the appropriate table based on entry type
           switch (upload.entryType) {
-            case 'memory':
-            case 'photo': // Support legacy entries
-              await updateMemoryMedia({
-                memoryId: upload.entryId,
+            case 'photo':
+              await updatePhotoMedia({
+                photoId: upload.entryId,
                 index: upload.index,
                 cloudUrl,
               });
-              console.log(`Successfully uploaded memory media ${upload.index + 1} for ${upload.entryId}`);
+              console.log(`Successfully uploaded photo media ${upload.index + 1} for ${upload.entryId}`);
               break;
               
             case 'milestone':

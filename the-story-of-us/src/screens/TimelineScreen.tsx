@@ -105,31 +105,32 @@ export const TimelineScreen = () => {
   // Get the first baby (for now)
   const baby = babies?.[0];
 
-  // Fetch memories for the baby
-  const memoriesData = useQuery(api.memories.getMemories, 
-    baby ? { babyId: baby._id, limit: 50 } : 'skip'
-  );
-
-  // Fetch growth logs
-  const growthLogs = useQuery(api.growthLogs.getLatestGrowthLogs,
+  // Fetch unified timeline data
+  const timelineData = useQuery(api.timeline.getTimelineForBaby,
     baby ? { babyId: baby._id } : 'skip'
   );
+
+  const memories = timelineData?.memories || [];
+  const growthLogs = timelineData?.growthLogs || [];
+  const milestones = timelineData?.milestones || [];
+  const milestoneEntries = timelineData?.milestoneEntries || [];
   
-  // Fetch milestones and milestone entries
-  const milestones = useQuery(api.milestones.getMilestones) || [];
-  const milestoneEntries = useQuery(api.milestoneEntries.getMilestoneEntries,
-    baby ? { babyId: baby._id } : 'skip'
-  ) || [];
+  // Debug logging
+  console.log('Timeline data:', {
+    anonymousId: anonymousId,
+    baby: baby,
+    memoriesCount: memories.length,
+    memoriesTypes: memories.map(m => ({ type: m.type, id: m._id })),
+    growthLogsCount: growthLogs.length,
+    milestonesCount: milestones.length,
+    milestoneEntriesCount: milestoneEntries.length,
+  });
 
-  const memories = memoriesData?.memories || [];
-
-  // Create a map of growth logs by date for quick lookup
-  const growthLogsByDate = React.useMemo(() => {
-    const map = new Map<number, Doc<"growthLogs">>();
+  // Create a map of growth logs by ID for quick lookup
+  const growthLogsById = React.useMemo(() => {
+    const map = new Map<string, Doc<"growthLogs">>();
     growthLogs?.forEach(log => {
-      // Find memories on the same day
-      const logDate = new Date(log.date).setHours(0, 0, 0, 0);
-      map.set(logDate, log);
+      map.set(log._id, log);
     });
     return map;
   }, [growthLogs]);
@@ -270,8 +271,8 @@ export const TimelineScreen = () => {
       >
         {memories.map((memory) => {
           // Find growth data for growth type memories
-          const memoryDate = new Date(memory.date).setHours(0, 0, 0, 0);
-          const growthData = memory.type === 'growth' ? growthLogsByDate.get(memoryDate) : undefined;
+          const growthData = memory.type === 'growth' && (memory as any).growthLogId ? 
+            growthLogsById.get((memory as any).growthLogId) : undefined;
           
           // Find milestone data for milestone type memories
           const milestone = memory.type === 'milestone' && memory.milestoneId ? 
