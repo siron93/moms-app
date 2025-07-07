@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Story of Us - Add Tag Popup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Nunito Sans', sans-serif; }
+        #app { width: 393px; height: 852px; background-color: #FBF9F6; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        textarea::placeholder { color: #d1d5db; }
+        .title-input::placeholder { color: #a1a1aa; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Background Journal Entry (dimmed) -->
+        <div class="flex-1 filter blur-sm brightness-90">
+             <header class="p-5 pt-6 bg-transparent flex items-center justify-between"><button class="font-semibold text-gray-500">Cancel</button><h1 class="font-bold text-gray-800 text-lg">New Entry</h1><button class="font-bold text-amber-600">Save</button></header>
+             <main class="overflow-y-auto px-5 pb-8 space-y-6">
+                <button class="w-full bg-gray-50/50 border border-gray-200/80 rounded-xl py-2 px-4"></button>
+                <div class="h-8 w-3/4 bg-gray-200/80 rounded-lg"></div>
+                <div class="h-20 w-full bg-gray-200/80 rounded-lg"></div>
+                <div class="h-20 w-1/2 bg-gray-200/80 rounded-lg"></div>
+             </main>
+        </div>
+
+        <!-- Add Tag Popup -->
+        <div class="absolute bottom-0 left-0 right-0 bg-[#FDFBF8] rounded-t-2xl shadow-2xl p-5 flex flex-col animate-slide-up" style="height: 45%;">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                <h2 class="font-bold text-gray-800 text-lg">Add Tags</h2>
+                <button class="font-semibold text-amber-600 hover:text-amber-800">Done</button>
+            </div>
+
+            <!-- New Tag Input -->
+            <div class="relative mb-4 flex-shrink-0">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span class="text-gray-400 font-bold">#</span>
+                </div>
+                <input type="text" placeholder="Create a new tag..." class="w-full bg-white border border-gray-200/80 rounded-full py-3 pl-7 pr-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all">
+            </div>
+
+            <!-- Tag Lists -->
+            <div class="flex-grow overflow-y-auto">
+                 <!-- Suggestions -->
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-500 text-sm mb-2">Suggestions</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="bg-white border border-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-sm hover:border-amber-400">+ #family</button>
+                        <button class="bg-white border border-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-sm hover:border-amber-400">+ #holiday</button>
+                        <button class="bg-white border border-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-sm hover:border-amber-400">+ #funny</button>
+                    </div>
+                </div>
+
+                <!-- Recently Used -->
+                <div>
+                    <h3 class="font-semibold text-gray-500 text-sm mb-2">Recently Used</h3>
+                    <div class="flex flex-wrap gap-2">
+                         <button class="bg-white border border-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-sm hover:border-amber-400">+ #grandma</button>
+                         <button class="bg-white border border-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-sm hover:border-amber-400">+ #park</button>
+                         <button class="bg-white border border-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-sm hover:border-amber-400">+ #sleepy</button>
+                         <button class="bg-white border border-gray-200 text-gray-700 font-semibold px-3 py-1.5 rounded-lg text-sm hover:border-amber-400">+ #messy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+      .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+      @keyframes slide-up { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+    </style>
+</body>
+</html>

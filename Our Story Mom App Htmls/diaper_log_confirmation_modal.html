@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Story of Us - Diaper Log Confirmation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Nunito Sans', sans-serif; }
+        #app { width: 393px; height: 852px; background-color: #FBF9F6; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Background Diaper Log (dimmed) -->
+        <div class="flex-1 filter blur-sm brightness-90">
+             <header class="p-5 pt-6 flex items-center justify-between"><button class="p-2"><svg class="h-6 w-6"></svg></button><h1 class="font-playfair text-2xl font-bold">Diaper Log</h1><div class="w-10"></div></header>
+             <main class="p-5 space-y-4"><div class="bg-white/50 h-32 rounded-2xl"></div><div class="bg-white/50 h-48 rounded-2xl"></div></main>
+        </div>
+        
+        <!-- Confirmation & Details Modal -->
+        <div class="absolute inset-0 bg-black/30 flex items-end">
+            <div class="bg-[#FDFBF8] w-full rounded-t-3xl p-5 pt-4 animate-slide-up flex flex-col">
+                <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 flex-shrink-0"></div>
+                
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-6 flex-shrink-0">
+                    <div class="bg-teal-500 p-2 rounded-full">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    </div>
+                    <h2 class="font-playfair text-2xl font-bold text-gray-800">Wet Diaper Logged!</h2>
+                </div>
+                
+                <div class="flex-grow overflow-y-auto pr-2 space-y-5">
+                    <!-- Time -->
+                    <div>
+                        <label class="font-semibold text-gray-700 mb-2 block">Time</label>
+                        <button class="w-full flex items-center justify-between bg-white border border-gray-200/80 rounded-xl py-3 px-4 text-left">
+                            <span class="text-gray-800">Now (3:45 PM)</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </button>
+                    </div>
+
+                    <!-- Notes -->
+                    <div>
+                        <label class="font-semibold text-gray-700 mb-2 block">Notes (optional)</label>
+                        <input type="text" placeholder="e.g., A little bit of rash cream" class="w-full bg-white border border-gray-200/80 rounded-xl py-3 px-4 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all">
+                    </div>
+
+                    <!-- For "Dirty" diapers, this section would appear -->
+                    <div class="hidden">
+                        <label class="font-semibold text-gray-700 mb-2 block">Color & Consistency</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="bg-white border border-gray-200 text-gray-600 font-semibold py-3 rounded-xl hover:border-amber-400">Color...</button>
+                            <button class="bg-white border border-gray-200 text-gray-600 font-semibold py-3 rounded-xl hover:border-amber-400">Consistency...</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Footer -->
+                <div class="pt-5 flex-shrink-0">
+                    <button class="w-full bg-gradient-to-br from-amber-500 to-orange-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-500/20 active:scale-[0.98]">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+      .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+      @keyframes slide-up { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+    </style>
+</body>
+</html>

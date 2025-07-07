@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Story of Us - My Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Nunito Sans', sans-serif; }
+        #app { width: 393px; height: 852px; background-color: #FBF9F6; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="flex-shrink-0 p-5 pt-6 bg-white/50 backdrop-blur-sm border-b border-gray-200/80 flex items-center justify-between">
+            <button class="p-2 text-gray-500 hover:text-gray-800"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg></button>
+            <h1 class="font-playfair text-2xl font-bold text-gray-800">My Profile</h1>
+            <button class="font-bold text-amber-600 hover:text-amber-800 p-2">Save</button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow overflow-y-auto p-5 pb-8 space-y-8">
+            <!-- Personal Details -->
+            <div class="flex flex-col items-center text-center">
+                 <div class="relative">
+                    <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200" class="w-24 h-24 rounded-full object-cover shadow-md" alt="User's profile photo">
+                    <button class="absolute bottom-0 right-0 bg-amber-500 text-white p-1.5 rounded-full shadow border-2 border-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+                    </button>
+                </div>
+                <div class="w-full mt-4">
+                    <label class="font-semibold text-gray-700 text-left block mb-1">Name</label>
+                    <input type="text" value="Maria Garcia" class="w-full bg-white border border-gray-200/80 rounded-xl py-3 px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                </div>
+            </div>
+
+            <!-- Account & Security -->
+            <div>
+                <h3 class="font-bold text-amber-800/80 mb-2 px-2">Account & Security</h3>
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-100">
+                        <label class="text-sm font-semibold text-gray-500">Email Address</label>
+                        <p class="font-medium text-gray-700">maria.garcia@email.com</p>
+                    </div>
+                    <a href="#" class="flex items-center justify-between p-4 hover:bg-gray-50">
+                        <span class="font-semibold text-gray-700">Change Password</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div>
+                <h3 class="font-bold text-amber-800/80 mb-2 px-2">Notification Settings</h3>
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-100">
+                    <div class="flex items-center justify-between p-4">
+                        <span class="font-semibold text-gray-700">Family Circle Updates</span>
+                        <button class="w-12 h-7 bg-green-400 rounded-full p-1 flex items-center transition-colors">
+                            <span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-5 transition-transform"></span>
+                        </button>
+                    </div>
+                     <div class="flex items-center justify-between p-4">
+                        <span class="font-semibold text-gray-700">Wellness Reminders</span>
+                         <button class="w-12 h-7 bg-gray-200 rounded-full p-1 flex items-center transition-colors">
+                            <span class="w-5 h-5 bg-white rounded-full shadow transform transition-transform"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Subscription -->
+            <div>
+                <h3 class="font-bold text-amber-800/80 mb-2 px-2">Subscription</h3>
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                     <a href="#" class="flex items-center justify-between p-4 hover:bg-gray-50">
+                        <span class="font-semibold text-gray-700">Manage Subscription</span>
+                        <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">Premium</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

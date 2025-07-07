@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Story of Us - Tools (Complete List)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Nunito Sans', sans-serif; }
+        #app { width: 393px; height: 852px; background-color: #FBF9F6; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header class="flex-shrink-0 p-5 pt-6 bg-transparent"><h1 class="font-playfair text-3xl font-bold text-gray-800 text-center">Your Daily Rhythm</h1></header>
+        <main class="flex-grow overflow-y-auto p-5 pb-32 space-y-6">
+            <!-- Insights Card -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm mb-6">
+                <h3 class="font-bold text-lg text-gray-800 mb-3">Growth Insights</h3>
+                <div class="flex justify-around text-center">
+                    <div><p class="text-sm text-gray-500">Weight</p><p class="font-semibold text-gray-800 text-lg">12 lbs 4 oz</p></div>
+                    <div class="w-px bg-gray-200"></div>
+                    <div><p class="text-sm text-gray-500">Height</p><p class="font-semibold text-gray-800 text-lg">23.5 in</p></div>
+                </div>
+            </div>
+
+            <!-- Daily Trackers -->
+            <div>
+                <h2 class="text-lg font-bold text-amber-800/80 mb-3">Daily Trackers</h2>
+                <div class="space-y-3">
+                    <a href="#" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all">
+                        <div class="bg-rose-100 p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg></div>
+                        <div class="flex-grow"><p class="font-bold text-gray-800">Feeding Tracker</p><p class="text-sm text-gray-500">Track nursing, bottles, and solids.</p></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                    <a href="#" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all">
+                        <div class="bg-teal-100 p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 14.818l4.4-4.4a4.5 4.5 0 00-6.364-6.364l-4.4 4.4a4.5 4.5 0 000 6.364l6.364 6.364a4.5 4.5 0 006.364-6.364l-4.4-4.4z" /></svg></div>
+                        <div class="flex-grow"><p class="font-bold text-gray-800">Diaper Log</p><p class="text-sm text-gray-500">Quickly log wet and dirty diapers.</p></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                    <a href="#" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all">
+                        <div class="bg-indigo-100 p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg></div>
+                        <div class="flex-grow"><p class="font-bold text-gray-800">Sleep Log</p><p class="text-sm text-gray-500">Track naps and nighttime sleep.</p></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                    <a href="#" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all">
+                        <div class="bg-sky-100 p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h8.25M8.25 12h5.25m-5.25 5.25h3m-3-5.25H5.25m1.5-1.5H5.25m1.5 0H8.25m6.75 0h1.5m-1.5 0h-5.25m0 5.25h5.25" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                        <div class="flex-grow"><p class="font-bold text-gray-800">Pumping Log</p><p class="text-sm text-gray-500">Track sessions and milk supply.</p></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Health & Records -->
+            <div>
+                 <h2 class="text-lg font-bold text-amber-800/80 mb-3">Health & Records</h2>
+                 <div class="space-y-3">
+                    <a href="#" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all">
+                        <div class="bg-orange-100 p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12M3.75 3h16.5M3.75 3v-1.5A2.25 2.25 0 016 0h12a2.25 2.25 0 012.25 2.25v1.5M12 16.5h3.375m-3.375 0h-3.375M12 16.5V21m0 0V16.5m0 0h3.375M12 21h3.375m-3.375 0h-3.375" /></svg></div>
+                        <div class="flex-grow"><p class="font-bold text-gray-800">Growth Chart</p><p class="text-sm text-gray-500">See weight and height over time.</p></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                    <a href="#" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all">
+                        <div class="bg-violet-100 p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18M-4.5 12h22.5" /></svg></div>
+                        <div class="flex-grow"><p class="font-bold text-gray-800">Appointment Log</p><p class="text-sm text-gray-500">Keep notes from doctor visits.</p></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                </div>
+            </div>
+        </main>
+        <!-- Bottom Nav -->
+        <nav class="absolute bottom-0 left-0 right-0 h-28 bg-white/60 backdrop-blur-xl border-t border-gray-200/80 flex justify-around items-center pt-2">
+            <div class="flex-1 flex justify-around"><a href="#" class="flex flex-col items-center justify-center gap-1 text-gray-400"><svg class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg><span class="text-xs font-medium">Timeline</span></a><a href="#" class="flex flex-col items-center justify-center gap-1 text-gray-400"><svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span class="text-xs font-medium">Milestones</span></a></div>
+            <div class="w-20"><button class="absolute -top-8 bg-gradient-to-br from-amber-500 to-orange-500 text-white w-20 h-20 rounded-full flex items-center justify-center shadow-xl"><svg class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg></button></div>
+            <div class="flex-1 flex justify-around"><a href="#" class="flex flex-col items-center justify-center gap-1 text-amber-700"><svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="text-xs font-bold">Tools</span></a><a href="#" class="flex flex-col items-center justify-center gap-1 text-gray-400"><svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg><span class="text-xs font-medium">Sanctuary</span></a></div>
+        </nav>
+    </div>
+</body>
+</html>

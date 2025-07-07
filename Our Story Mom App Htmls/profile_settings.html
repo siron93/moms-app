@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Story of Us - Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Nunito Sans', sans-serif; }
+        #app { width: 393px; height: 852px; background-color: #FBF9F6; border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="flex-shrink-0 p-5 pt-6 bg-transparent">
+            <h1 class="font-playfair text-3xl font-bold text-gray-800 text-center">Your Profile</h1>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow overflow-y-auto p-5 pb-32">
+            <!-- Child Profile Card -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 flex flex-col items-center text-center">
+                <div class="relative">
+                    <img src="https://images.pexels.com/photos/3771077/pexels-photo-3771077.jpeg?auto=compress&cs=tinysrgb&w=200" class="w-24 h-24 rounded-full object-cover shadow-md" alt="Leo's profile photo">
+                    <button class="absolute bottom-0 right-0 bg-amber-500 text-white p-1.5 rounded-full shadow border-2 border-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L14.732 3.732z" /></svg>
+                    </button>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mt-3">Leo James</h2>
+                <p class="text-gray-500">10 months old</p>
+                <button class="mt-4 w-full bg-amber-100 text-amber-800 font-bold py-3 rounded-lg hover:bg-amber-200 transition-colors">Switch Child</button>
+            </div>
+
+            <!-- Settings Sections -->
+            <div class="space-y-6">
+                <!-- My Account Section -->
+                <div>
+                    <h3 class="font-bold text-amber-800/80 mb-2 px-2">My Account</h3>
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <a href="#" class="flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50">
+                            <span class="font-semibold text-gray-700">My Profile</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </a>
+                        <a href="#" class="flex items-center justify-between p-4 hover:bg-gray-50">
+                            <span class="font-semibold text-gray-700">App Settings</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </a>
+                    </div>
+                </div>
+
+                 <!-- Family Circle Section -->
+                <div>
+                    <h3 class="font-bold text-amber-800/80 mb-2 px-2">Family Circle</h3>
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                         <a href="#" class="flex items-center justify-between p-4 hover:bg-gray-50">
+                            <span class="font-semibold text-gray-700">Manage Sharing</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-500">3 people</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                 <!-- App Support Section -->
+                <div>
+                    <h3 class="font-bold text-amber-800/80 mb-2 px-2">Support</h3>
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                         <a href="#" class="flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50">
+                            <span class="font-semibold text-gray-700">Help & FAQs</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </a>
+                        <a href="#" class="flex items-center justify-between p-4 hover:bg-gray-50">
+                            <span class="font-semibold text-gray-700">Contact Us</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Log Out -->
+                <div class="pt-4">
+                    <button class="w-full text-center font-semibold text-red-600 hover:bg-red-50 py-3 rounded-lg">Log Out</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 h-28 bg-white/60 backdrop-blur-xl border-t border-gray-200/80 flex justify-around items-center pt-2">
+            <!-- Icons would go here, active state would be on a Profile icon -->
+        </nav>
+    </div>
+</body>
+</html>
