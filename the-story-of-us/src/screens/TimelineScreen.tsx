@@ -16,7 +16,7 @@ import {
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Doc } from '../../convex/_generated/dataModel';
-import { MemoryCard } from '../components/MemoryCard';
+import { TimelineCard } from '../components/TimelineCard';
 import { getOrCreateAnonymousId } from '../utils/anonymousId';
 import { fonts } from '../hooks/useFonts';
 import Svg, { Path } from 'react-native-svg';
@@ -280,7 +280,7 @@ export const TimelineScreen = () => {
             milestoneEntriesByMilestoneId.get(memory.milestoneId) : undefined;
           
           return (
-            <MemoryCard
+            <TimelineCard
               key={`${memory._id}-${refreshKey}`}
               memory={memory}
               baby={baby}

@@ -30,9 +30,8 @@ export const addUploadToQueue = async (upload: UploadQueueItem) => {
 export const processPendingUploads = async (
   generateUploadUrl: () => Promise<string>,
   storeFileUrl: (args: any) => Promise<any>,
-  updatePhotoMedia: (args: any) => Promise<void>,
-  updateMilestoneMedia: (args: any) => Promise<void>,
-  updateFirstMedia: (args: any) => Promise<void>
+  updateMemoryMedia: (args: any) => Promise<void>,
+  updateMilestoneMedia: (args: any) => Promise<void>
 ) => {
   try {
     const queueJson = await AsyncStorage.getItem(UPLOAD_QUEUE_KEY);
@@ -55,13 +54,14 @@ export const processPendingUploads = async (
         if (cloudUrl) {
           // Update the appropriate table based on entry type
           switch (upload.entryType) {
-            case 'photo':
-              await updatePhotoMedia({
-                photoId: upload.entryId,
+            case 'memory':
+            case 'photo': // Support legacy entries
+              await updateMemoryMedia({
+                memoryId: upload.entryId,
                 index: upload.index,
                 cloudUrl,
               });
-              console.log(`Successfully uploaded photo media ${upload.index + 1} for ${upload.entryId}`);
+              console.log(`Successfully uploaded memory media ${upload.index + 1} for ${upload.entryId}`);
               break;
               
             case 'milestone':
@@ -73,13 +73,9 @@ export const processPendingUploads = async (
               console.log(`Successfully uploaded milestone photo for ${upload.entryId}`);
               break;
               
-            case 'first':
-              // For firsts, we update the single photo field
-              await updateFirstMedia({
-                firstId: upload.entryId,
-                photoUrl: cloudUrl,
-              });
-              console.log(`Successfully uploaded first photo for ${upload.entryId}`);
+            default:
+              console.warn(`Unknown entry type: ${upload.entryType}`);
+              // Remove from queue if unknown type
               break;
           }
         } else {

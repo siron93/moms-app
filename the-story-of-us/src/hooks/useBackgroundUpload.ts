@@ -6,9 +6,8 @@ import { processPendingUploads, getPendingUploadCount } from '../services/backgr
 export const useBackgroundUpload = () => {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const storeFileUrl = useMutation(api.files.storeFileUrl);
-  const updatePhotoMediaUrl = useMutation(api.photos.updatePhotoMediaUrl);
+  const updateMemoryMediaUrl = useMutation(api.memories.updateMemoryMediaUrl);
   const updateMilestoneEntry = useMutation(api.milestoneEntries.updateMilestoneEntry);
-  const updateFirst = useMutation(api.firsts.updateFirst);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const processUploads = async () => {
@@ -19,9 +18,8 @@ export const useBackgroundUpload = () => {
         await processPendingUploads(
           generateUploadUrl,
           storeFileUrl,
-          updatePhotoMediaUrl,
-          updateMilestoneEntry,
-          updateFirst
+          updateMemoryMediaUrl,
+          updateMilestoneEntry
         );
       }
     } catch (error) {

@@ -30,6 +30,7 @@ import {
 } from '../services/mediaService';
 import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import { Id } from '../../convex/_generated/dataModel';
 import { getOrCreateAnonymousId } from '../utils/anonymousId';
 import { getUTCTimestamp } from '../utils/dateUtils';
 import { addUploadToQueue } from '../services/backgroundUpload';
@@ -76,7 +77,7 @@ export const AddPhotoScreen: React.FC<AddPhotoScreenProps> = ({ onClose, onSave,
   const [isUploading, setIsUploading] = useState(false);
   const [anonymousId, setAnonymousId] = useState<string | null>(null);
 
-  const createPhoto = useMutation(api.photos.createPhoto);
+  const createMemory = useMutation(api.memories.createMemory);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const storeFileUrl = useMutation(api.files.storeFileUrl);
 
@@ -193,23 +194,27 @@ export const AddPhotoScreen: React.FC<AddPhotoScreenProps> = ({ onClose, onSave,
         }
       }
 
-      // Create photo entry immediately with local paths
-      const photoId = await createPhoto({
-        babyId: babyId as any,
-        caption: caption,
-        mediaUrls: permanentPaths, // Use local paths initially
-        mediaTypes: mediaTypes,
-        localMediaPaths: permanentPaths,
+      // Create memory entry immediately with local paths
+      const memoryId = await createMemory({
+        babyId: babyId as Id<"babies">,
+        type: 'photo',
+        title: undefined,
+        content: caption,
+        mediaUrl: permanentPaths[0], // First media URL
+        mediaUrls: permanentPaths, // All media URLs
         mediaType: mediaTypes[0], // Primary media type
+        mediaTypes: mediaTypes, // All media types
+        localMediaPaths: permanentPaths,
         date: getUTCTimestamp(),
+        tags: [],
         anonymousId: anonymousId || undefined,
       });
 
       // Queue uploads for background processing
       for (let i = 0; i < permanentPaths.length; i++) {
         await addUploadToQueue({
-          entryId: photoId as any,
-          entryType: 'photo',
+          entryId: memoryId as any,
+          entryType: 'memory',
           localUri: permanentPaths[i],
           index: i,
           type: mediaTypes[i],
