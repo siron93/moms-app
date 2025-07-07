@@ -1,0 +1,49 @@
+{
+  "name": "the-story-of-us",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "dev:ios": "npx expo run:ios",
+    "dev:android": "npx expo run:android",
+    "dev": "./scripts/dev-build.sh",
+    "expo": "./scripts/start-expo.sh",
+    "convex:dev": "npx convex dev",
+    "convex:deploy": "npx convex deploy"
+  },
+  "dependencies": {
+    "@clerk/clerk-expo": "^2.14.2",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/datetimepicker": "^8.4.2",
+    "@react-navigation/bottom-tabs": "^7.4.2",
+    "@react-navigation/native": "^7.1.14",
+    "convex": "^1.25.2",
+    "convex-helpers": "^0.1.96",
+    "expo": "~53.0.17",
+    "expo-blur": "^14.1.5",
+    "expo-file-system": "^18.1.11",
+    "expo-font": "^13.3.2",
+    "expo-image-manipulator": "^13.1.7",
+    "expo-image-picker": "^16.1.4",
+    "expo-media-library": "^17.1.7",
+    "expo-secure-store": "^14.2.3",
+    "expo-splash-screen": "^0.30.10",
+    "expo-status-bar": "~2.2.3",
+    "nativewind": "^4.1.23",
+    "react": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-safe-area-context": "^5.5.1",
+    "react-native-screens": "^4.11.1",
+    "react-native-svg": "^15.12.0",
+    "tailwindcss": "^4.1.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.0.10",
+    "typescript": "~5.8.3"
+  },
+  "private": true
+}
