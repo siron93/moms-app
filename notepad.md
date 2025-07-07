@@ -1,10 +1,3 @@
-track feeding
-    - input what you used for feeding
-track milestones
-    - first word
-    - started walking
-track things while being still pregnant
-
 Deployment URL
 This development Convex deployment is hosted at the following URL.
 
@@ -17,18 +10,21 @@ This development Convex deployment hosts HTTP Actions at the following URL.
 In Convex functions, this is available as process.env.CONVEX_SITE_URL.
 https://glorious-manatee-479.convex.site
 
-DESIGNED
-main timeline design 
-
-TO DESIGN
-how would the timeline look with a milestone
-where do we put appointments? 
 
 
 FEATURES
 a way to change baby, if you have multiple babies 
 activity ideas with your baby with illustrations inside
 explore the app with pre made data inside that we premade
+New Favorite
+    - TOY
+    - ANIMAL
+    - FOOD
+    - MOVIE
+    - BOOK
+- this is how your timeline could look like, show a prepopulated timeline 
+
+
 
 TIMELINE
 Journal Entries
@@ -39,10 +35,17 @@ Birth Card
 Growth Card
 
 
+
+
+
 The Solution:
 Instead of adding "Appointment" to the creation modal, we'll keep the Appointment Log as a utility within the Toolbox tab. Its purpose is for future planning and reminders.
 When a mother wants to document a past appointment, the best way is through a Journal Entry. We can even create a special template for it later, so when she taps "Journal Entry," she could choose between a "Blank Note" or an "Appointment Note" with pre-filled fields for doctor's name, weight, and notes.
 For now, we'll stick to your refined list for the modal, as it's clean, focused, and covers the core memory types.
+
+
+
+
 
 
 
