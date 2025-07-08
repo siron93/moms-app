@@ -10,7 +10,8 @@ import {
   FirstCard,
   GrowthCard,
   MilestoneCard,
-  FirstWordCard
+  FirstWordCard,
+  EnhancedPhotoCard
 } from './timeline-cards';
 
 interface TimelineCardProps {
@@ -60,7 +61,7 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({
       />
       
       {memory.type === 'photo' && (
-        <PhotoCard memory={memory} />
+        <EnhancedPhotoCard memory={memory} />
       )}
       
       {memory.type === 'journal' && (

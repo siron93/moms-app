@@ -1,6 +1,7 @@
 export { DateBadge } from './DateBadge';
 export { BirthAnnouncementCard } from './BirthAnnouncementCard';
 export { PhotoCard } from './PhotoCard';
+export { EnhancedPhotoCard } from './EnhancedPhotoCard';
 export { JournalCard } from './JournalCard';
 export { FirstCard } from './FirstCard';
 export { GrowthCard } from './GrowthCard';

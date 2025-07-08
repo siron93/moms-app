@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { validateBabyOwnership, getCurrentUserId } from "./lib/validation";
 
 // Get latest growth logs for a baby
 export const getLatestGrowthLogs = query({
@@ -20,6 +21,20 @@ export const getLatestGrowthLogs = query({
   },
 });
 
+// Alias for backward compatibility
+export const getGrowthLogsForBaby = query({
+  args: {
+    babyId: v.id("babies"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("growthLogs")
+      .withIndex("by_baby_date", (q) => q.eq("babyId", args.babyId))
+      .order("desc")
+      .collect();
+  },
+});
+
 // Create a new growth log
 export const createGrowthLog = mutation({
   args: {
@@ -35,15 +50,18 @@ export const createGrowthLog = mutation({
     anonymousId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    
-    let userId = undefined;
-    if (identity) {
-      const user = await ctx.db
-        .query("users")
-        .withIndex("by_clerk", (q) => q.eq("clerkId", identity.subject))
-        .unique();
-      userId = user?._id;
+    const userId = await getCurrentUserId(ctx.db, ctx.auth?.userId);
+
+    // Validate ownership before creating the entry
+    const hasOwnership = await validateBabyOwnership(
+      ctx.db,
+      args.babyId,
+      userId,
+      args.anonymousId
+    );
+
+    if (!hasOwnership) {
+      throw new Error("You don't have permission to create growth logs for this baby");
     }
 
     const logId = await ctx.db.insert("growthLogs", {

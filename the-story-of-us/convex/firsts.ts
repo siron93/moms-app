@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
+import { validateBabyOwnership, getCurrentUserId } from "./lib/validation";
 
 // Create a "first" entry
 export const createFirst = mutation({
@@ -13,9 +14,19 @@ export const createFirst = mutation({
     anonymousId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId ? 
-      await ctx.db.query("users").withIndex("by_clerk", q => q.eq("clerkId", ctx.auth!.userId!)).first()
-        .then(user => user?._id) : undefined;
+    const userId = await getCurrentUserId(ctx.db, ctx.auth?.userId);
+
+    // Validate ownership before creating the entry
+    const hasOwnership = await validateBabyOwnership(
+      ctx.db,
+      args.babyId,
+      userId,
+      args.anonymousId
+    );
+
+    if (!hasOwnership) {
+      throw new Error("You don't have permission to create entries for this baby");
+    }
 
     return await ctx.db.insert("firsts", {
       babyId: args.babyId,
@@ -37,10 +48,25 @@ export const updateFirst = mutation({
     firstId: v.id("firsts"),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
+    anonymousId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const first = await ctx.db.get(args.firstId);
     if (!first) throw new Error("First entry not found");
+
+    const userId = await getCurrentUserId(ctx.db, ctx.auth?.userId);
+
+    // Validate ownership using the baby ID from the first entry
+    const hasOwnership = await validateBabyOwnership(
+      ctx.db,
+      first.babyId,
+      userId,
+      args.anonymousId || first.anonymousId
+    );
+
+    if (!hasOwnership) {
+      throw new Error("You don't have permission to update this first entry");
+    }
 
     await ctx.db.patch(args.firstId, {
       ...(args.title !== undefined && { title: args.title }),

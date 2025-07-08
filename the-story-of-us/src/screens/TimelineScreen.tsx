@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { 
   View, 
   Text, 
-  ScrollView, 
+  FlatList, 
   SafeAreaView, 
   StyleSheet, 
   TextInput,
@@ -11,7 +11,8 @@ import {
   RefreshControl,
   Button,
   AppState,
-  AppStateStatus
+  AppStateStatus,
+  Alert
 } from 'react-native';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
@@ -23,6 +24,9 @@ import Svg, { Path } from 'react-native-svg';
 import { useBackgroundUpload } from '../hooks/useBackgroundUpload';
 import { useFocusEffect } from '@react-navigation/native';
 import { MilestoneLogModal } from '../components/MilestoneLogModal';
+import { useConvexPaginatedTimeline } from '../hooks/useConvexPaginatedTimeline';
+import { useBaby } from '../contexts/BabyContext';
+import { appEventEmitter, APP_EVENTS } from '../utils/eventEmitter';
 
 // Icons
 const SearchIcon = () => (
@@ -44,11 +48,11 @@ const ProfileIcon = () => (
 );
 
 export const TimelineScreen = () => {
+  const { selectedBaby: baby, isLoading: isBabyLoading } = useBaby();
   const [anonymousId, setAnonymousId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [selectedMilestone, setSelectedMilestone] = useState<Doc<"milestones"> | null>(null);
   const [selectedMilestoneEntry, setSelectedMilestoneEntry] = useState<Doc<"milestoneEntries"> | undefined>(undefined);
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
@@ -56,103 +60,54 @@ export const TimelineScreen = () => {
   // Process background uploads while viewing timeline
   useBackgroundUpload();
   
-  // Force re-render to update timestamps when screen gains focus
-  useFocusEffect(
-    useCallback(() => {
-      // Force a re-render to update relative timestamps
-      setRefreshKey(prev => prev + 1);
-      
-      // Set up interval to refresh timestamps every minute
-      const interval = setInterval(() => {
-        setRefreshKey(prev => prev + 1);
-      }, 60000); // 60 seconds
-      
-      // Cleanup interval when screen loses focus
-      return () => clearInterval(interval);
-    }, [])
-  );
+  // Remove the automatic refresh - timestamps don't need constant updates
+  // Users can pull to refresh if they want updated timestamps
   
-  // Also refresh when app comes to foreground
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'active') {
-        setRefreshKey(prev => prev + 1);
-      }
-    };
-    
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    return () => subscription.remove();
-  }, []);
+  // Remove automatic refresh on app state change
+  // This was causing unnecessary re-queries
   
   // Mutations
   const seedMilestones = useMutation(api.seed.seedMilestones);
   const seedTestData = useMutation(api.seedData.seedTestData);
+  const updateLeoBirthData = useMutation(api.updateLeo.updateLeoBirthData);
 
   // Get anonymous ID
   useEffect(() => {
     getOrCreateAnonymousId().then(setAnonymousId);
   }, []);
 
-  // Fetch babies
-  const babies = useQuery(api.babies.getBabies, 
-    anonymousId ? { anonymousId } : 'skip'
-  );
+  // Convex handles reactivity automatically, so we don't need manual refresh events
 
-  // Debug logging
-  console.log('Anonymous ID:', anonymousId);
-  console.log('Babies query result:', babies);
+  // Baby is now provided by context - no need to query here
 
-  // Get the first baby (for now)
-  const baby = babies?.[0];
+  // Use Convex paginated timeline with built-in reactivity
+  const {
+    items: memories,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    error,
+    refresh,
+    loadMore,
+    isOffline,
+  } = useConvexPaginatedTimeline(baby?._id);
 
-  // Fetch unified timeline data
-  const timelineData = useQuery(api.timeline.getTimelineForBaby,
-    baby ? { babyId: baby._id } : 'skip'
-  );
-
-  const memories = timelineData?.memories || [];
-  const growthLogs = timelineData?.growthLogs || [];
-  const milestones = timelineData?.milestones || [];
-  const milestoneEntries = timelineData?.milestoneEntries || [];
+  // Only fetch milestones reference data (names, descriptions, etc.)
+  // The actual entries are already included in the timeline items
+  const milestones = useQuery(api.milestones.getMilestones) || [];
   
-  // Debug logging
-  console.log('Timeline data:', {
-    anonymousId: anonymousId,
-    baby: baby,
-    memoriesCount: memories.length,
-    memoriesTypes: memories.map(m => ({ type: m.type, id: m._id })),
-    growthLogsCount: growthLogs.length,
-    milestonesCount: milestones.length,
-    milestoneEntriesCount: milestoneEntries.length,
-  });
-
-  // Create a map of growth logs by ID for quick lookup
-  const growthLogsById = React.useMemo(() => {
-    const map = new Map<string, Doc<"growthLogs">>();
-    growthLogs?.forEach(log => {
-      map.set(log._id, log);
-    });
-    return map;
-  }, [growthLogs]);
-  
-  // Create maps for milestone data
+  // Create map for milestone reference data
   const milestonesById = React.useMemo(() => {
     const map = new Map<string, Doc<"milestones">>();
     milestones.forEach(m => map.set(m._id, m));
     return map;
   }, [milestones]);
-  
-  const milestoneEntriesByMilestoneId = React.useMemo(() => {
-    const map = new Map<string, Doc<"milestoneEntries">>();
-    milestoneEntries.forEach(entry => map.set(entry.milestoneId, entry));
-    return map;
-  }, [milestoneEntries]);
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    // Convex will automatically refetch
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+    await refresh();
+    setRefreshing(false);
+  }, [refresh]);
 
   const handleMilestonePress = useCallback((milestone: Doc<"milestones">, milestoneEntry?: Doc<"milestoneEntries">) => {
     setSelectedMilestone(milestone);
@@ -168,7 +123,7 @@ export const TimelineScreen = () => {
 
   const handleMilestoneModalSuccess = useCallback(() => {
     // The modal will close itself
-    // Convex reactivity will update the timeline automatically
+    // Convex will automatically update the timeline through reactivity
   }, []);
 
   const handleSeedData = async () => {
@@ -195,7 +150,7 @@ export const TimelineScreen = () => {
     }
   };
 
-  if (!anonymousId) {
+  if (!anonymousId || isBabyLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
@@ -231,6 +186,22 @@ export const TimelineScreen = () => {
         <View>
           <Text style={styles.headerSubtitle}>The Story of</Text>
           <Text style={styles.headerTitle}>{baby.name}</Text>
+          {/* Temporary button to update Leo's birth data */}
+          {baby._id === "j578dbm8adbvjsn952jzwmbp197k8b51" && !baby.birthWeight && (
+            <TouchableOpacity 
+              onPress={async () => {
+                try {
+                  await updateLeoBirthData();
+                  Alert.alert('Success', 'Updated Leo\'s birth data');
+                } catch (error) {
+                  Alert.alert('Error', 'Failed to update birth data');
+                }
+              }}
+              style={{ marginTop: 8, backgroundColor: '#F59E0B', padding: 8, borderRadius: 8 }}
+            >
+              <Text style={{ color: 'white', fontSize: 12 }}>Add Birth Data</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <TouchableOpacity style={styles.profileButton}>
           <ProfileIcon />
@@ -256,10 +227,61 @@ export const TimelineScreen = () => {
         </View>
       </View>
 
+      {/* Offline indicator */}
+      {isOffline && (
+        <View style={styles.offlineIndicator}>
+          <Text style={styles.offlineText}>Offline Mode</Text>
+        </View>
+      )}
+
       {/* Timeline */}
-      <ScrollView 
-        style={styles.timeline}
-        contentContainerStyle={styles.timelineContent}
+      <FlatList
+        data={memories}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item: memory }) => {
+          // Growth data is now embedded in the timeline item
+          const growthData = memory.type === 'growth' ? {
+            _id: (memory as any).growthLogId,
+            weight: (memory as any).weight,
+            weightUnit: (memory as any).weightUnit,
+            height: (memory as any).height,
+            heightUnit: (memory as any).heightUnit,
+            headCircumference: (memory as any).headCircumference,
+            headCircumferenceUnit: (memory as any).headCircumferenceUnit,
+            notes: memory.content,
+            date: memory.date,
+          } : undefined;
+          
+          // Find milestone reference data
+          const milestone = memory.type === 'milestone' && memory.milestoneId ? 
+            milestonesById.get(memory.milestoneId) : undefined;
+          
+          // Milestone entry data is already embedded in the timeline item
+          const milestoneEntry = memory.type === 'milestone' ? {
+            _id: memory._id,
+            milestoneId: memory.milestoneId!,
+            achievedDate: memory.date,
+            notes: memory.content,
+            photoUrl: memory.mediaUrl,
+            metadata: undefined, // This would need to be included in timeline query if needed
+          } : undefined;
+          
+          return (
+            <TimelineCard
+              key={memory._id}
+              memory={memory}
+              baby={baby}
+              growthData={growthData as any}
+              milestone={milestone}
+              milestoneEntry={milestoneEntry as any}
+              onMilestonePress={handleMilestonePress}
+            />
+          );
+        }}
+        contentContainerStyle={[
+          styles.timelineContent,
+          memories.length === 0 && styles.emptyTimelineContent
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -268,38 +290,41 @@ export const TimelineScreen = () => {
             tintColor="#F59E0B"
           />
         }
-      >
-        {memories.map((memory) => {
-          // Find growth data for growth type memories
-          const growthData = memory.type === 'growth' && (memory as any).growthLogId ? 
-            growthLogsById.get((memory as any).growthLogId) : undefined;
-          
-          // Find milestone data for milestone type memories
-          const milestone = memory.type === 'milestone' && memory.milestoneId ? 
-            milestonesById.get(memory.milestoneId) : undefined;
-          const milestoneEntry = memory.type === 'milestone' && memory.milestoneId ? 
-            milestoneEntriesByMilestoneId.get(memory.milestoneId) : undefined;
-          
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={() => {
+          if (isLoadingMore) {
+            return (
+              <View style={styles.loadingMore}>
+                <ActivityIndicator size="small" color="#F59E0B" />
+              </View>
+            );
+          }
+          if (!hasMore && memories.length > 0) {
+            return (
+              <View style={styles.endOfList}>
+                <Text style={styles.endOfListText}>You've reached the beginning</Text>
+              </View>
+            );
+          }
+          return null;
+        }}
+        ListEmptyComponent={() => {
+          if (isLoading) {
+            return (
+              <View style={styles.emptyTimelineContainer}>
+                <ActivityIndicator size="large" color="#F59E0B" />
+              </View>
+            );
+          }
           return (
-            <TimelineCard
-              key={`${memory._id}-${refreshKey}`}
-              memory={memory}
-              baby={baby}
-              growthData={growthData}
-              milestone={milestone}
-              milestoneEntry={milestoneEntry}
-              onMilestonePress={handleMilestonePress}
-            />
+            <View style={styles.emptyTimelineContainer}>
+              <Text style={styles.emptyTimelineText}>No memories yet</Text>
+              <Text style={styles.emptyTimelineSubtext}>Tap the + button to add your first memory</Text>
+            </View>
           );
-        })}
-        
-        {memories.length === 0 && (
-          <View style={styles.emptyTimelineContainer}>
-            <Text style={styles.emptyTimelineText}>No memories yet</Text>
-            <Text style={styles.emptyTimelineSubtext}>Tap the + button to add your first memory</Text>
-          </View>
-        )}
-      </ScrollView>
+        }}
+      />
 
       {/* Milestone Edit Modal */}
       {selectedMilestone && baby && (
@@ -411,6 +436,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 100,
   },
+  emptyTimelineContent: {
+    flex: 1,
+  },
   emptyTimelineText: {
     fontSize: 18,
     color: '#6B7280',
@@ -419,5 +447,29 @@ const styles = StyleSheet.create({
   emptyTimelineSubtext: {
     fontSize: 14,
     color: '#9CA3AF',
+  },
+  offlineIndicator: {
+    backgroundColor: '#FEF3C7',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  offlineText: {
+    fontSize: 14,
+    color: '#92400E',
+    fontFamily: fonts.nunito,
+  },
+  loadingMore: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  endOfList: {
+    paddingVertical: 30,
+    alignItems: 'center',
+  },
+  endOfListText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    fontFamily: fonts.nunito,
   },
 });

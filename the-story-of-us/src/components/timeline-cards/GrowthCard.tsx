@@ -35,7 +35,7 @@ export const GrowthCard: React.FC<GrowthCardProps> = ({ memory, growthData }) =>
             {growthData.weight && (
               <View style={styles.growthStatItem}>
                 <Text style={styles.growthStatLabel}>Weight</Text>
-                <Text style={styles.growthStatValue}>{growthData.weight} {growthData.weightUnit || 'lbs'}</Text>
+                <Text style={styles.growthStatValue}>{growthData.weight} {growthData.weightUnit === 'lb' ? 'lbs' : growthData.weightUnit || 'lbs'}</Text>
               </View>
             )}
             {growthData.weight && growthData.height && (

@@ -18,6 +18,7 @@ import { getOrCreateAnonymousId } from '../utils/anonymousId';
 import { formatLocalDate } from '../utils/dateUtils';
 import { MilestoneLogModal } from '../components/MilestoneLogModal';
 import { MILESTONE_IMAGES } from '../utils/milestoneImages';
+import { useBaby } from '../contexts/BabyContext';
 
 // Milestone descriptions
 const MILESTONE_DESCRIPTIONS: Record<string, string> = {
@@ -143,6 +144,7 @@ const MilestoneItem: React.FC<MilestoneItemProps> = ({ milestone, entry, onPress
 };
 
 export const MilestonesScreen = () => {
+  const { selectedBaby: baby } = useBaby();
   const [anonymousId, setAnonymousId] = useState<string | null>(null);
   const [selectedMilestone, setSelectedMilestone] = useState<Doc<"milestones"> | null>(null);
   const [showLogModal, setShowLogModal] = useState(false);
@@ -150,12 +152,6 @@ export const MilestonesScreen = () => {
   useEffect(() => {
     getOrCreateAnonymousId().then(setAnonymousId);
   }, []);
-  
-  // Fetch baby data
-  const babies = useQuery(api.babies.getBabies, 
-    anonymousId ? { anonymousId } : 'skip'
-  );
-  const baby = babies?.[0];
   
   // Fetch all milestones
   const milestones = useQuery(api.milestones.getMilestones);

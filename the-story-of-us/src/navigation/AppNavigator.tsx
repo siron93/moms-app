@@ -8,26 +8,15 @@ import { SanctuaryScreen } from '../screens/SanctuaryScreen';
 import { CustomTabBar } from '../components/CustomTabBar';
 import { AddMemoryModal } from '../components/AddMemoryModal';
 import { AddPhotoScreen } from '../screens/AddPhotoScreen';
-import { useQuery } from 'convex/react';
-import { api } from '../../convex/_generated/api';
-import { getOrCreateAnonymousId } from '../utils/anonymousId';
+import { useBaby } from '../contexts/BabyContext';
+import { appEventEmitter, APP_EVENTS } from '../utils/eventEmitter';
 
 const Tab = createBottomTabNavigator();
 
 export const AppNavigator = () => {
+  const { selectedBaby: currentBaby } = useBaby();
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isPhotoScreenVisible, setIsPhotoScreenVisible] = useState(false);
-  const [anonymousId, setAnonymousId] = useState<string | null>(null);
-
-  useEffect(() => {
-    getOrCreateAnonymousId().then(setAnonymousId);
-  }, []);
-
-  // Get the first baby for the anonymous user
-  const babies = useQuery(api.babies.getBabies, 
-    anonymousId ? { anonymousId } : 'skip'
-  );
-  const currentBaby = babies?.[0];
 
   const handleMemoryOptionSelect = (option: string) => {
     setIsAddModalVisible(false);
@@ -42,6 +31,8 @@ export const AppNavigator = () => {
     console.log('Photo data:', data);
     // Photo is already saved to Convex in AddPhotoScreen
     setIsPhotoScreenVisible(false);
+    // Emit event to refresh timeline when photo is saved
+    appEventEmitter.emit(APP_EVENTS.TIMELINE_REFRESH_NEEDED);
   };
 
   return (

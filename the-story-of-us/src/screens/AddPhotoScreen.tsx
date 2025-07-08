@@ -33,7 +33,7 @@ import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { getOrCreateAnonymousId } from '../utils/anonymousId';
 import { getUTCTimestamp } from '../utils/dateUtils';
-import { addUploadToQueue } from '../services/backgroundUpload';
+import { queueMultipleMediaUploads } from '../services/uploadHelpers';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -194,28 +194,24 @@ export const AddPhotoScreen: React.FC<AddPhotoScreenProps> = ({ onClose, onSave,
         }
       }
 
-      // Create photo entry immediately with local paths
+      // Create photo entry using local paths as URLs (no Convex upload)
       const photoId = await createPhoto({
         babyId: babyId as Id<"babies">,
         caption: caption,
-        mediaUrls: permanentPaths, // All media URLs
+        mediaUrls: permanentPaths, // Use local paths as URLs
         mediaTypes: mediaTypes, // All media types
-        localMediaPaths: permanentPaths,
+        localMediaPaths: permanentPaths, // Keep for backward compatibility
         date: getUTCTimestamp(),
         anonymousId: anonymousId || undefined,
       });
 
       // Queue uploads for background processing
-      for (let i = 0; i < permanentPaths.length; i++) {
-        await addUploadToQueue({
-          entryId: photoId as any,
-          entryType: 'photo',
-          localUri: permanentPaths[i],
-          index: i,
-          type: mediaTypes[i],
-          retryCount: 0,
-        });
-      }
+      const mediaItems = permanentPaths.map((path, index) => ({
+        localUri: path,
+        type: mediaTypes[index],
+      }));
+      
+      await queueMultipleMediaUploads(photoId as string, 'photo', mediaItems);
       
       console.log('Media queued for background upload');
 

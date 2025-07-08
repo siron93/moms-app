@@ -23,9 +23,10 @@ import { fonts } from '../hooks/useFonts';
 import Svg, { Path } from 'react-native-svg';
 import { getOrCreateAnonymousId } from '../utils/anonymousId';
 import { saveMediaPermanently, uploadMediaToConvex } from '../services/mediaService';
-import { addUploadToQueue } from '../services/backgroundUpload';
+import { queueMediaUpload } from '../services/uploadHelpers';
 import { formatLocalDate } from '../utils/dateUtils';
 import { MILESTONE_IMAGES } from '../utils/milestoneImages';
+import { appEventEmitter, APP_EVENTS } from '../utils/eventEmitter';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -131,16 +132,20 @@ export const MilestoneLogModal: React.FC<MilestoneLogModalProps> = ({
         photoLocalPath = await saveMediaPermanently(photoUri, 'image');
         
         if (photoLocalPath) {
-          // Start upload process (will complete in background)
-          const uploadResult = await uploadMediaToConvex(
-            photoLocalPath, 
-            'image',
-            generateUploadUrl,
-            storeFileUrl
-          );
-          if (uploadResult) {
-            photoUrl = uploadResult;
-          }
+          // DISABLED: No upload to Convex - use local path as URL
+          console.log('Convex upload disabled - using local path as URL');
+          photoUrl = photoLocalPath;
+          
+          // Original upload code (disabled)
+          // const uploadResult = await uploadMediaToConvex(
+          //   photoLocalPath, 
+          //   'image',
+          //   generateUploadUrl,
+          //   storeFileUrl
+          // );
+          // if (uploadResult) {
+          //   photoUrl = uploadResult;
+          // }
         }
       } else if (photoUri) {
         // Keep existing photo
@@ -166,6 +171,7 @@ export const MilestoneLogModal: React.FC<MilestoneLogModalProps> = ({
           photoUrl: photoUrl !== undefined ? photoUrl : undefined,
           photoLocalPath: photoLocalPath !== undefined ? photoLocalPath : undefined,
           metadata,
+          anonymousId,
         });
       } else {
         // Create new entry
@@ -182,17 +188,13 @@ export const MilestoneLogModal: React.FC<MilestoneLogModalProps> = ({
 
         // If photo upload failed but we have a local path, queue it for background upload
         if (photoLocalPath && !photoUrl) {
-          await addUploadToQueue({
-            entryId,
-            entryType: 'milestone',
-            localUri: photoLocalPath,
-            index: 0,
-            type: 'image',
-            retryCount: 0,
-          });
+          await queueMediaUpload(entryId, 'milestone', photoLocalPath, 'image');
         }
       }
 
+      // Emit event to refresh timeline
+      appEventEmitter.emit(APP_EVENTS.TIMELINE_REFRESH_NEEDED);
+      
       onSuccess();
       onClose();
     } catch (error) {

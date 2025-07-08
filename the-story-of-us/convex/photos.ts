@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
+import { validateBabyOwnership, getCurrentUserId } from "./lib/validation";
 
 // Create a photo/video memory
 export const createPhoto = mutation({
@@ -14,14 +15,24 @@ export const createPhoto = mutation({
     anonymousId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId ? 
-      await ctx.db.query("users").withIndex("by_clerk", q => q.eq("clerkId", ctx.auth!.userId!)).first()
-        .then(user => user?._id) : undefined;
+    const userId = await getCurrentUserId(ctx.db, ctx.auth?.userId);
+
+    // Validate ownership
+    const isOwner = await validateBabyOwnership(
+      ctx.db,
+      args.babyId,
+      userId,
+      args.anonymousId
+    );
+
+    if (!isOwner) {
+      throw new Error("You don't have permission to add photos to this baby profile");
+    }
 
     return await ctx.db.insert("photos", {
       babyId: args.babyId,
       userId,
-      anonymousId: args.anonymousId,
+      anonymousId: !userId ? args.anonymousId : undefined,
       caption: args.caption,
       mediaUrls: args.mediaUrls,
       mediaTypes: args.mediaTypes,

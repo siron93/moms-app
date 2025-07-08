@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Image, ImageProps, View, ActivityIndicator } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { getCachedMediaPath } from '../services/mediaService';
+import { getLocalPathForConvexUrl } from '../services/localMediaCache';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'source'> {
   cloudUrl?: string;
   localPath?: string;
   fallbackUri?: string;
   showLoading?: boolean;
+  priority?: 'low' | 'normal' | 'high';
 }
 
 export const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -15,6 +17,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   localPath,
   fallbackUri,
   showLoading = true,
+  priority = 'normal',
   style,
   ...props
 }) => {
@@ -25,8 +28,11 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     loadOptimalImage();
   }, [cloudUrl, localPath, fallbackUri]);
 
-  const loadOptimalImage = async () => {
-    setIsLoading(true);
+  const loadOptimalImage = useCallback(async () => {
+    // Don't show loading for local images
+    if (localPath && localPath.startsWith('file://')) {
+      setIsLoading(false);
+    }
     
     try {
       // Priority 1: Always use local path first if it exists
@@ -34,7 +40,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         const fileInfo = await FileSystem.getInfoAsync(localPath);
         if (fileInfo.exists) {
           setImageUri(localPath);
-          setIsLoading(false);
           return;
         }
       }
@@ -44,22 +49,28 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         const fileInfo = await FileSystem.getInfoAsync(cloudUrl);
         if (fileInfo.exists) {
           setImageUri(cloudUrl);
-          setIsLoading(false);
           return;
         }
       }
 
-      // Priority 3: Use cloud URL as backup if local doesn't exist
+      // Priority 3: Check local cache for Convex URL
       if (cloudUrl && cloudUrl.startsWith('http')) {
+        const cachedPath = await getLocalPathForConvexUrl(cloudUrl);
+        if (cachedPath) {
+          setImageUri(cachedPath);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Priority 4: ONLY as last resort, use cloud URL
+        // This should rarely happen - only first time viewing
+        console.log('Warning: Loading image from Convex (bandwidth usage):', cloudUrl);
         setImageUri(cloudUrl);
         setIsLoading(false);
-        
-        // Optionally download and cache for next time
-        // This could be implemented later for offline support
         return;
       }
 
-      // Priority 4: Use fallback (should rarely happen)
+      // Priority 5: Use fallback (should rarely happen)
       if (fallbackUri) {
         setImageUri(fallbackUri);
         setIsLoading(false);
@@ -76,7 +87,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       setImageUri(localPath || cloudUrl || fallbackUri || '');
       setIsLoading(false);
     }
-  };
+  }, [cloudUrl, localPath, fallbackUri]);
 
   if (!imageUri) {
     return showLoading ? (
@@ -92,6 +103,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       source={{ uri: imageUri }}
       style={style}
       onLoadEnd={() => setIsLoading(false)}
+      resizeMode={props.resizeMode || 'cover'}
     />
   );
 };

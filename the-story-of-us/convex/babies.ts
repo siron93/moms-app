@@ -81,6 +81,10 @@ export const updateBaby = mutation({
     name: v.optional(v.string()),
     gender: v.optional(v.union(v.literal("male"), v.literal("female"), v.literal("other"))),
     profilePictureUrl: v.optional(v.string()),
+    birthWeight: v.optional(v.number()),
+    birthWeightUnit: v.optional(v.string()),
+    birthLength: v.optional(v.number()),
+    birthLengthUnit: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { babyId, ...updates } = args;

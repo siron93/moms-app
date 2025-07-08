@@ -23,6 +23,10 @@ export const seedTestData = mutation({
       name: "Emma",
       birthDate: new Date("2024-01-15").getTime(),
       gender: "female",
+      birthWeight: 7.2,
+      birthWeightUnit: "lb",
+      birthLength: 20,
+      birthLengthUnit: "in",
       anonymousId: args.anonymousId,
       createdAt: Date.now(),
     });
@@ -84,8 +88,8 @@ export const seedTestData = mutation({
         babyId,
         caption: photo.caption,
         date: photo.date,
-        mediaType: photo.mediaType,
-        tags: photo.tags,
+        mediaUrls: ["https://images.pexels.com/photos/1391487/pexels-photo-1391487.jpeg"], // Placeholder
+        mediaTypes: [photo.mediaType],
         anonymousId: args.anonymousId,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -160,13 +164,13 @@ export const seedTestData = mutation({
       console.log("Created first:", first.title);
     }
     
-    // Create growth logs
+    // Create growth logs (converting to lbs and inches for US audience)
     const growthData = [
-      { date: "2024-01-15", weight: 3.2, height: 50 }, // Birth
-      { date: "2024-02-15", weight: 4.5, height: 54 }, // 1 month
-      { date: "2024-04-15", weight: 6.2, height: 60 }, // 3 months
-      { date: "2024-07-15", weight: 7.8, height: 66 }, // 6 months
-      { date: "2024-10-15", weight: 9.1, height: 72 }, // 9 months
+      { date: "2024-01-15", weight: 7.2, weightUnit: "lb" as const, height: 20, heightUnit: "in" as const, notes: "Birth measurements" }, 
+      { date: "2024-02-15", weight: 10, weightUnit: "lb" as const, height: 21.5, heightUnit: "in" as const, notes: "1 month checkup" },
+      { date: "2024-04-15", weight: 13.7, weightUnit: "lb" as const, height: 23.6, heightUnit: "in" as const, notes: "3 month checkup" },
+      { date: "2024-07-15", weight: 17.2, weightUnit: "lb" as const, height: 26, heightUnit: "in" as const, notes: "6 month checkup - doing great!" },
+      { date: "2024-10-15", weight: 20, weightUnit: "lb" as const, height: 28.3, heightUnit: "in" as const, notes: "9 month checkup" },
     ];
     
     for (const growth of growthData) {
@@ -174,7 +178,10 @@ export const seedTestData = mutation({
         babyId,
         date: new Date(growth.date).getTime(),
         weight: growth.weight,
+        weightUnit: growth.weightUnit,
         height: growth.height,
+        heightUnit: growth.heightUnit,
+        notes: growth.notes,
         anonymousId: args.anonymousId,
         createdAt: Date.now(),
       });

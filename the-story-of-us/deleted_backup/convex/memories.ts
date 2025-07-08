@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
+import { validateBabyOwnership, getCurrentUserId } from "./lib/validation";
 
 // Create a new memory
 export const createMemory = mutation({
@@ -28,15 +29,18 @@ export const createMemory = mutation({
     anonymousId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    
-    let userId = undefined;
-    if (identity) {
-      const user = await ctx.db
-        .query("users")
-        .withIndex("by_clerk", (q) => q.eq("clerkId", identity.subject))
-        .unique();
-      userId = user?._id;
+    const userId = await getCurrentUserId(ctx.db, ctx.auth?.userId);
+
+    // Validate ownership
+    const isOwner = await validateBabyOwnership(
+      ctx.db,
+      args.babyId,
+      userId,
+      args.anonymousId
+    );
+
+    if (!isOwner) {
+      throw new Error("You don't have permission to add memories to this baby profile");
     }
 
     // Set primary media fields from arrays

@@ -2,9 +2,10 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Doc } from '../../../convex/_generated/dataModel';
 import { fonts } from '../../hooks/useFonts';
+import { OptimizedImage } from '../OptimizedImage';
 
 interface BirthAnnouncementCardProps {
-  memory: Doc<"memories">;
+  memory: any; // Timeline item from the unified query
   baby: Doc<"babies">;
 }
 
@@ -12,10 +13,18 @@ export const BirthAnnouncementCard: React.FC<BirthAnnouncementCardProps> = ({ me
   const birthDate = new Date(baby.birthDate);
   return (
     <View style={[styles.cardContainer, styles.birthCard]}>
-      <Image 
-        source={{ uri: 'https://images.pexels.com/photos/1391487/pexels-photo-1391487.jpeg?auto=compress&cs=tinysrgb&w=800' }}
-        style={styles.birthImage}
-      />
+      {memory.mediaUrl || memory.localMediaPaths?.[0] ? (
+        <OptimizedImage
+          cloudUrl={memory.mediaUrl}
+          localPath={memory.localMediaPaths?.[0]}
+          style={styles.birthImage}
+        />
+      ) : (
+        <Image 
+          source={{ uri: 'https://images.pexels.com/photos/1391487/pexels-photo-1391487.jpeg?auto=compress&cs=tinysrgb&w=800' }}
+          style={styles.birthImage}
+        />
+      )}
       <View style={styles.birthContent}>
         <Text style={styles.birthSubtitle}>Welcome to the world</Text>
         <Text style={styles.birthTitle}>{baby.name}</Text>
@@ -27,14 +36,22 @@ export const BirthAnnouncementCard: React.FC<BirthAnnouncementCardProps> = ({ me
               {birthDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </Text>
           </View>
-          <View style={styles.birthDetailItem}>
-            <Text style={styles.birthDetailLabel}>Weight</Text>
-            <Text style={styles.birthDetailValue}>7 lbs 2 oz</Text>
-          </View>
-          <View style={styles.birthDetailItem}>
-            <Text style={styles.birthDetailLabel}>Length</Text>
-            <Text style={styles.birthDetailValue}>20 inches</Text>
-          </View>
+          {baby.birthWeight !== undefined && (
+            <View style={styles.birthDetailItem}>
+              <Text style={styles.birthDetailLabel}>Weight</Text>
+              <Text style={styles.birthDetailValue}>
+                {baby.birthWeight} {baby.birthWeightUnit === 'lb' ? 'lbs' : baby.birthWeightUnit || 'lbs'}
+              </Text>
+            </View>
+          )}
+          {baby.birthLength !== undefined && (
+            <View style={styles.birthDetailItem}>
+              <Text style={styles.birthDetailLabel}>Length</Text>
+              <Text style={styles.birthDetailValue}>
+                {baby.birthLength} {baby.birthLengthUnit || 'in'}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </View>

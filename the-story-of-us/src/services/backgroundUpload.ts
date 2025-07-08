@@ -1,12 +1,14 @@
 import { api } from '../../convex/_generated/api';
 import { Doc, Id } from '../../convex/_generated/dataModel';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveMediaToCache } from './localMediaCache';
 
 const UPLOAD_QUEUE_KEY = 'pending_uploads';
 
 export interface UploadQueueItem {
   entryId: string;
-  entryType: 'photo' | 'milestone' | 'first';
+  entryType: 'photo' | 'milestone' | 'memory';
+  tableType?: 'photos' | 'milestoneEntries'; // Specify which table to update
   localUri: string;
   index: number; // For multi-media items
   type: 'image' | 'video';
@@ -31,7 +33,8 @@ export const processPendingUploads = async (
   generateUploadUrl: () => Promise<string>,
   storeFileUrl: (args: any) => Promise<any>,
   updatePhotoMedia: (args: any) => Promise<void>,
-  updateMilestoneMedia: (args: any) => Promise<void>
+  updateMilestoneMedia: (args: any) => Promise<void>,
+  updateMemoryMedia?: (args: any) => Promise<void>
 ) => {
   try {
     const queueJson = await AsyncStorage.getItem(UPLOAD_QUEUE_KEY);
@@ -52,15 +55,29 @@ export const processPendingUploads = async (
         );
 
         if (cloudUrl) {
+          // Save the mapping between cloud URL and local path
+          await saveMediaToCache(cloudUrl, upload.localUri, upload.type);
+          
           // Update the appropriate table based on entry type
           switch (upload.entryType) {
             case 'photo':
-              await updatePhotoMedia({
-                photoId: upload.entryId,
-                index: upload.index,
-                cloudUrl,
-              });
-              console.log(`Successfully uploaded photo media ${upload.index + 1} for ${upload.entryId}`);
+              // Handle both new multi-table structure and legacy unified memories table
+              if (upload.tableType === 'photos' || !updateMemoryMedia) {
+                await updatePhotoMedia({
+                  photoId: upload.entryId as any,
+                  index: upload.index,
+                  cloudUrl: cloudUrl,
+                });
+                console.log(`Successfully uploaded photo media ${upload.index + 1} for ${upload.entryId}`);
+              } else {
+                // Legacy support for memories table
+                await updateMemoryMedia({
+                  memoryId: upload.entryId,
+                  index: upload.index,
+                  cloudUrl,
+                });
+                console.log(`Successfully uploaded memory media ${upload.index + 1} for ${upload.entryId}`);
+              }
               break;
               
             case 'milestone':
@@ -72,13 +89,25 @@ export const processPendingUploads = async (
               console.log(`Successfully uploaded milestone photo for ${upload.entryId}`);
               break;
               
+            case 'memory':
+              // For unified memories table (if still in use)
+              if (updateMemoryMedia) {
+                await updateMemoryMedia({
+                  memoryId: upload.entryId,
+                  index: upload.index,
+                  cloudUrl,
+                });
+                console.log(`Successfully uploaded memory media ${upload.index + 1} for ${upload.entryId}`);
+              }
+              break;
+              
             default:
               console.warn(`Unknown entry type: ${upload.entryType}`);
               // Remove from queue if unknown type
               break;
           }
         } else {
-          throw new Error('Upload returned null');
+          throw new Error('Upload returned null or empty cloudUrl');
         }
       } catch (error) {
         console.error(`Failed to upload media for ${upload.entryType} ${upload.entryId}:`, error);

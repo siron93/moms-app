@@ -20,6 +20,10 @@ export default defineSchema({
     birthDate: v.number(),
     gender: v.optional(v.union(v.literal("male"), v.literal("female"), v.literal("other"))),
     profilePictureUrl: v.optional(v.string()),
+    birthWeight: v.optional(v.number()),
+    birthWeightUnit: v.optional(v.string()),
+    birthLength: v.optional(v.number()),
+    birthLengthUnit: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -92,6 +96,7 @@ export default defineSchema({
     photoLocalPath: v.optional(v.string()),
     metadata: v.optional(v.any()),
     createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_baby", ["babyId"])
     .index("by_anonymous", ["anonymousId"])
