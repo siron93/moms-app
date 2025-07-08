@@ -57,13 +57,16 @@ export const getTimelinePaginated = query({
     const requestedLimit = args.paginationOpts?.numItems || args.limit || ITEMS_PER_PAGE;
     const limit = Math.min(requestedLimit, 50);
     
-    // Parse cursor to get skip count
-    let skipCount = 0;
+    // Parse cursor to get last date and ID for proper pagination
+    let cursorDate: number | null = null;
+    let cursorId: string | null = null;
     if (cursorString) {
       try {
-        skipCount = parseInt(cursorString, 10);
+        const cursorData = JSON.parse(cursorString);
+        cursorDate = cursorData.date;
+        cursorId = cursorData.id;
       } catch {
-        skipCount = 0;
+        // Invalid cursor, start from beginning
       }
     }
 
@@ -77,36 +80,39 @@ export const getTimelinePaginated = query({
     
     const birthDate = baby.birthDate;
 
-    // Fetch ALL data from all tables (we'll sort and paginate in memory)
+    // Fetch limited data from each table to reduce bandwidth
+    // We fetch more than the limit from each table to ensure we have enough items after merging
+    const fetchLimit = Math.max(100, limit * 2); // Fetch 2x the requested limit from each table
+    
     const [photos, journalEntries, firsts, growthLogs, milestoneEntries] = await Promise.all([
       ctx.db.query("photos")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(fetchLimit),
       ctx.db.query("journalEntries")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(fetchLimit),
       ctx.db.query("firsts")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(fetchLimit),
       ctx.db.query("growthLogs")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(fetchLimit),
       ctx.db.query("milestoneEntries")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(fetchLimit),
     ]);
 
-    // Get milestones for reference
+    // Get milestones for reference - only fetch the ones we need
     const milestoneIds = new Set(milestoneEntries.map(m => m.milestoneId));
     const milestones = milestoneIds.size > 0 
       ? await ctx.db.query("milestones")
           .filter(q => q.or(...Array.from(milestoneIds).map(id => q.eq(q.field("_id"), id))))
-          .collect()
+          .take(milestoneIds.size) // Only fetch as many as we need
       : [];
     const milestonesById = new Map(milestones.map(m => [m._id, m]));
 
@@ -226,10 +232,30 @@ export const getTimelinePaginated = query({
       return b._id.localeCompare(a._id); // Stable sort by ID
     });
 
-    // Apply pagination using skip/limit
-    const paginatedItems = allItems.slice(skipCount, skipCount + limit);
-    const hasMore = allItems.length > skipCount + limit;
-    const nextCursor = hasMore ? String(skipCount + limit) : undefined;
+    // Apply cursor-based filtering if we have a cursor
+    let filteredItems = allItems;
+    if (cursorDate !== null && cursorId !== null) {
+      filteredItems = allItems.filter(item => {
+        // Include items that are older than cursor date
+        // OR same date but with ID that comes after cursor ID (for stable pagination)
+        return item.date < cursorDate || 
+               (item.date === cursorDate && item._id.localeCompare(cursorId) > 0);
+      });
+    }
+
+    // Take only the requested limit
+    const paginatedItems = filteredItems.slice(0, limit);
+    const hasMore = filteredItems.length > limit;
+    
+    // Create next cursor if there are more items
+    let nextCursor: string | undefined;
+    if (hasMore && paginatedItems.length > 0) {
+      const lastItem = paginatedItems[paginatedItems.length - 1];
+      nextCursor = JSON.stringify({
+        date: lastItem.date,
+        id: lastItem._id
+      });
+    }
 
     // Return format depends on whether this is called by usePaginatedQuery
     if (args.paginationOpts) {
@@ -262,28 +288,29 @@ export const getAllTimelineItems = query({
     
     const birthDate = baby.birthDate;
 
-    // Fetch ALL data from all tables
+    // Fetch limited data from all tables - for caching we still limit to reasonable amount
+    const maxItems = 200; // Maximum items per table for getAllTimelineItems
     const [photos, journalEntries, firsts, growthLogs, milestoneEntries] = await Promise.all([
       ctx.db.query("photos")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(maxItems),
       ctx.db.query("journalEntries")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(maxItems),
       ctx.db.query("firsts")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(maxItems),
       ctx.db.query("growthLogs")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(maxItems),
       ctx.db.query("milestoneEntries")
         .withIndex("by_baby_date", q => q.eq("babyId", args.babyId))
         .order("desc")
-        .collect(),
+        .take(maxItems),
     ]);
 
     // Transform all items into timeline format
